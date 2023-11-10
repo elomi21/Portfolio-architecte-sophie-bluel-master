@@ -52,6 +52,7 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+	background-color: #FFFEF8
 }
 header {
 	display: flex;
@@ -176,7 +177,6 @@ margin: auto;
 }
 #contact form {
 	text-align: left;
-	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
@@ -203,7 +203,7 @@ input[type="submit"]{
 	margin : 2em auto ;
 	width: 180px;
 	text-align: center;
-	border-radius: 60px ;
+	border-radius: 60px;
 }
 
 footer nav ul {
@@ -211,4 +211,3 @@ footer nav ul {
 	justify-content: flex-end;
 	margin: 2em
 }
-
