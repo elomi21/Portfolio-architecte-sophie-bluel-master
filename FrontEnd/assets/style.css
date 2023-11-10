@@ -144,15 +144,13 @@ button{
 	font-size: 1em;
 	font-weight: 700;
 	text-align: center;
-	padding-top: 9px;
-	padding-bottom: 9px;
+	padding: 9px;
 	background-color: #FFFEF8;
 }
 .button-selected{
 	color:#FFF;
 	background-color: #1D6154;
 }
-
 .gallery {
 	width: 100%;
 	display: grid;
