@@ -45,7 +45,7 @@ const displayCategories = (works) => {
       let filteredWorks = []; // tableau qui va contenir les work.categoryId correspond à la category(le bouton cliqué) 
 
       filteredWorks = works.filter(function (work) {
-        if (category !== 0) {
+        if (category !== "0") {
           // si le bouton cliqué(ayant une data-categorie > 0)  est !== de o alors
           return work.categoryId == category; // on affiche les work dont la categoryId 1-2 ou 3 correspond au bouton cliqué ayant pour categorie 1-2ou 3
         } else {
@@ -53,6 +53,7 @@ const displayCategories = (works) => {
         }
       });
       displayWorks(filteredWorks);
+      console.log(filteredWorks)
     });
   });
 };
