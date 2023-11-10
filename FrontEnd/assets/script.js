@@ -1,74 +1,68 @@
-// Déclarration des fonctions - START
+let works = [];
+
 const fetchWorks = async () => {
-  let worksData = [];
-  await fetch("http://localhost:5678/api/works")
-    .then((response) => response.json())
-    .then((worksContent) => (worksData = worksContent));
-  return worksData;
+  const response = await fetch("http://localhost:5678/api/works");
+  works = response.json();
+  return works;
 };
 
-const displayWorks = async () => {
-  let works = await fetchWorks(); //Récupérer les works
+const displayWorks = (works) => { // fonction qui me permet d'afficher dans la div .gallery un tableau work contenant les elements categoryId/imageURL/title contenu respectivement dans les balise html figure/ img src/figcaption
   let gallery = document.querySelector(".gallery");
-  displayFilter();
-
   gallery.innerHTML = works
     .map(
       (work) => `
-    <figure class="categorie${work.categoryId}">
-    <img src=${work.imageUrl} alt="${work.title}">
-    <figcaption>${work.title}</figcaption>
-    </figure>
-    `
+         <figure class="categorie${work.categoryId}">
+         <img src=${work.imageUrl} alt="${work.title}">
+        <figcaption>${work.title}</figcaption>
+         </figure>
+        `
     )
     .join(""); // permet de concaténer ce que retourne works.map
 };
 
-const displayFilter = async () => {
-  let works = await fetchWorks(); //Récupérer les works
-  let filters = document.querySelector(".filters");
-  let categories = works.map((work) => work.category.name); //Récupérer seulement les names de toutes les catégories des works
-  let UniqCategories = [...new Set(categories)]; //Dédoublonner les catégories pour ne garder seulement une catégorie dans le tableau UniqCategories : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Set#d%C3%A9doublonner_un_tableau
+//définir le nom de chaque filtre en récupérant dans works les category.name new set = garder 1 exemplaire de chaque category
+const displayCategories = (works) => {
+  let Allcategories = works.map((work) => work.category.name);// on map pour récupérer seulement l'élément category.name
+  let UniqCategories = [...new Set(Allcategories)]; // ...new set permet de récupérer une seule work.category.name de chaque, on évite les doublons. on dédoublonne
+  let filters = document.querySelector(".filters");// on ajoute dans la div .filters x boutons en fonction du nombre de categories trouvées
+  for (let i = 0; i < UniqCategories.length; i++)
+    filters.innerHTML += `<button class="filter-btn" data-categorie="${
+      i + 1
+    }">${UniqCategories[i]}</button>`;
 
-  for (let i = 0; i < UniqCategories.length; i++) {
-    const category = UniqCategories[i];
-    filters.innerHTML += `
-    <button class="filter-btn" id="categorie${i + 1}">${category}</button>    
-    `; //i+1 pour attribuer le bon id de la catégorie puisque catégorie.id = 0 n'existe pas
-  }
-  document.querySelectorAll(".filter-btn").forEach((button) => {
+  document.querySelectorAll(".filter-btn").forEach((button) => {//pour chaque button contenu dans la class .filter-btn  on va ajouter l'évenement suivant
     button.addEventListener("click", (e) => {
-      const btnClicked = e.target;
-      const category = btnClicked.id;
-      document.querySelectorAll(".filter-btn").forEach((selected) => {
-        selected.classList.remove("button-selected");
-      });
-      btnClicked.classList.toggle("button-selected");
-      filterListFigure(category, btnClicked);
+      const btnClicked = e.target; // Ajout d'un évenement au clic sur les boutons
+      let category = btnClicked.dataset.categorie; 
+      const ancienBtnSelected = document.querySelector(".button-selected");
+      ancienBtnSelected.classList.remove("button-selected");
+      btnClicked.classList.add("button-selected");
+      //on clic sur btn cat-0 ça active la class .button-selected 
+      //si on clic sur btn cat-1 on active .button-selected mais on retire(remove).button-selected du btn-0
 
-      //Filtrer toutes les figure et afficher seulement les catégories "categorie1"
-      //Récupérer toutes les figure dans le DOM
-      //Utiliser une méthode pour filtrer : seulement les figure ayant pour class "categorie1"
-      //Cacher les figure : element.style.display = "none" // Les afficher : element.style.display = ""
+
+      //filtrer les images en fonction du bouton cliqué
+      let filteredWorks = []; // tableau qui va contenir les work.categoryId correspond à la category(le bouton cliqué) 
+
+      filteredWorks = works.filter(function (work) {
+        if (category !== 0) {
+          // si le bouton cliqué(ayant une data-categorie > 0)  est !== de o alors
+          return work.categoryId == category; // on affiche les work dont la categoryId 1-2 ou 3 correspond au bouton cliqué ayant pour categorie 1-2ou 3
+        } else {
+          return work; // autrement affiche toutes les work
+        }
+      });
+      displayWorks(filteredWorks);
     });
   });
 };
 
-const filterListFigure = (categorie) => {
-  let allFigures = document.querySelectorAll(".gallery > figure");
-  for (let i = 0; i < allFigures.length; i++) {
-    const figure = allFigures[i];
-    const figureCategorie = figure.className;
-    figure.style.display = "";
-
-    if (figureCategorie !== categorie && categorie !== "categorie-tous") {
-      figure.style.display = "none";
-    } else {
-      figure.style.display = "";
-    }
-  }
+const showGalleryByfilters = async () => {
+  works = await fetchWorks();
+  displayWorks(works);
+  displayCategories(works);
 };
-
-// Déclarration des fonctions - END
-// Début du code
-displayWorks();
+showGalleryByfilters();
+// cette fonction me permet de récupérer
+// l'ensemble des fonctions précedentes  
+// je les applique en appelant la fonction showGalleryByfilters();
