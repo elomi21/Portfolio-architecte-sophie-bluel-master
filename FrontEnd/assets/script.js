@@ -54,7 +54,6 @@ const displayCategories = (works) => {
         }
       });
       displayWorks(filteredWorks);
-      console.log(filteredWorks);
     });
   });
 };
@@ -68,4 +67,5 @@ showGalleryByfilters();
 // cette fonction me permet de récupérer
 // l'ensemble des fonctions précedentes
 // je les applique en appelant la fonction showGalleryByfilters();
+
 
