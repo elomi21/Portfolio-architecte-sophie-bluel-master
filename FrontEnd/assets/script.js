@@ -1,3 +1,23 @@
+
+/*-----changement de login en logout lorque localStorage.getItem récupére un token valide-----*/
+const navLog = document.querySelector(".log")
+const editioMode = document.querySelector(".edition-mode")
+
+if (localStorage.getItem("token")) {
+  navLog.innerHTML = "logout"
+  editioMode.style.visibility = "visible"
+}
+
+/*------Modal---------*/
+
+
+
+
+
+
+
+/*-----Affichage de la galerie en fonction des filtres choisis-----*/
+
 let works = [];
 
 const fetchWorks = async () => {

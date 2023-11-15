@@ -27,16 +27,14 @@ formLogin.addEventListener("submit", function (submitedForm) {
     response.json().then((userInfos) => {
       const userToken = userInfos.token;
       const errorMessage = document.querySelector(".error-message");
-
       if (response.status === 200 && userToken != null) {
         window.localStorage.setItem("token", userToken); //permet de stocker le token dans la mémoire du navigateur.
         window.location.href = "./index.html"; // redirection vers la page d'accueil
-        
       } else {
         errorMessage.textContent =
           "Votre adresse e-mail ou votre mot de passe sont erronés ou ne sont pas enregistrés";
         errorMessage.style.display = "block";
-      } 
+      }
     });
   });
 });
