@@ -1,16 +1,37 @@
-
 /*-----changement de login en logout lorque localStorage.getItem récupére un token valide-----*/
-const navLog = document.querySelector(".log")
-const editioMode = document.querySelector(".edition-mode")
+const navLog = document.querySelector(".log");
+const barEditioMode = document.querySelector(".edition-mode");
+const header = document.querySelector("header");
+const portfolio = document.getElementById("portfolio");
+
 
 if (localStorage.getItem("token")) {
-  navLog.innerHTML = "logout"
-  editioMode.style.visibility = "visible"
+  navLog.innerHTML = "logout";
+  let filters = document.querySelector(".filters");
+  filters.style.display = "none";
+  /*------modif style de la page index en version connecté--------*/
+  barEditioMode.style.display = "flex";
+  header.style.margin = "38px 0px 92px 0px";
+  portfolio.style.margin = "139px 0px 92px 0px";
+  
 }
 
+// if (navLog) {
+//   localStorage.removeItem("token")
+//   const logLink = document.getElementById("link");
+//   logLink.href = "./index.html";
+// }
+
 /*------Modal---------*/
+const openmodal = function (e) {
+  e.prevent
+
+}
 
 
+document.querySelectorAll('.js-modal').forEach(a => {
+  a.addEventListener('click', openmodal)
+})
 
 
 
@@ -80,6 +101,7 @@ const displayCategories = (works) => {
 
 const showGalleryByfilters = async () => {
   works = await fetchWorks();
+
   displayWorks(works);
   displayCategories(works);
 };
@@ -87,5 +109,3 @@ showGalleryByfilters();
 // cette fonction me permet de récupérer
 // l'ensemble des fonctions précedentes
 // je les applique en appelant la fonction showGalleryByfilters();
-
-
