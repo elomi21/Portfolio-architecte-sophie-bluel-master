@@ -55,22 +55,43 @@ body {
 }
 
 .modal{
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display:flex;
 	position: fixed;
+	align-items: center;
+	justify-content: center ;
 	left: 0;
 	top: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.8);
+	background: rgba(0, 0, 0, 0.3);
+	z-index: 1;
+	display: none;
 }
 
 .modal-wrapper{
-	max-width: 630px;
-	max-height: 688px;
+	width: 630px;
+	max-width: calc(100vw - 20px);
+	max-height: calc(100vh - 50px);
 	border-radius: 10px;
+	padding: 30px;
+	border: 1px solid black;
 	background: white;
+	position: relative;
+	overflow: auto;
+	display: none;
+}
+
+.modal-wrapper img{
+width: 24px;
+height: 24px;
+position: absolute;
+right:30px;
+top:26px;
+
+}
+.modal-wrapper h3{
+	margin: 0;
+	padding: 0;
 }
 
 .edition-mode{

@@ -1,43 +1,6 @@
-/*-----changement de login en logout lorque localStorage.getItem récupére un token valide-----*/
-const navLog = document.querySelector(".log");
-const barEditioMode = document.querySelector(".edition-mode");
-const header = document.querySelector("header");
-const portfolio = document.getElementById("portfolio");
+/*------Cette partie du code est destiné à la page index en mode déconnecté qui est accessible au visiteur-----------*/
 
-
-if (localStorage.getItem("token")) {
-  navLog.innerHTML = "logout";
-  let filters = document.querySelector(".filters");
-  filters.style.display = "none";
-  /*------modif style de la page index en version connecté--------*/
-  barEditioMode.style.display = "flex";
-  header.style.margin = "38px 0px 92px 0px";
-  portfolio.style.margin = "139px 0px 92px 0px";
-  
-}
-
-// if (navLog) {
-//   localStorage.removeItem("token")
-//   const logLink = document.getElementById("link");
-//   logLink.href = "./index.html";
-// }
-
-/*------Modal---------*/
-const openmodal = function (e) {
-  e.prevent
-
-}
-
-
-document.querySelectorAll('.js-modal').forEach(a => {
-  a.addEventListener('click', openmodal)
-})
-
-
-
-
-
-/*-----Affichage de la galerie en fonction des filtres choisis-----*/
+/*-Affichage de la galerie en fonction des filtres choisis-*/
 
 let works = [];
 
@@ -109,3 +72,75 @@ showGalleryByfilters();
 // cette fonction me permet de récupérer
 // l'ensemble des fonctions précedentes
 // je les applique en appelant la fonction showGalleryByfilters();
+
+/*-----------------------------------------------------------------*/
+
+const navLogIn = document.querySelector(".login");
+const navLogOut = document.querySelector(".logout");
+const barEditionMode = document.querySelector(".edition-mode");
+const header = document.querySelector("header");
+const btnModif = document.querySelector(".btn-modification");
+
+/*-------recharger la page en mode visiteur-----*/
+/*cette fonction a pour but de supprimer le token lorqu'on clique sur logout ce qui recharge la page index en version visiteur*/
+
+navLogOut.addEventListener("click", (e) => {
+  e.preventDefault();
+  localStorage.removeItem("token");
+  location.reload();
+});
+
+/*------------page index en mode utilisateur connecté----------*/
+function isLogin() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    let filters = document.querySelector(".filters");
+    filters.style.display = "none";
+    /*------modif style de la page index en version connecté--------*/
+    barEditionMode.style.display = "flex";
+    header.style.margin = "38px 0px 92px 0px";
+    portfolio.style.margin = "139px 0px 92px 0px";
+    btnModif.style.display = "flex";
+    navLogIn.style.display = "none";
+    navLogOut.style.display = "flex";
+  } else {
+    navLogIn.style.display = "flex";
+    navLogOut.style.display = "none";
+  }
+}
+isLogin();
+
+/*-------------------Modal------------------------------*/
+const modalBlackPage = document.querySelector(".modal")
+const modalWhiteBlock= document.querySelector(".modal-wrapper")
+
+
+/*--fonction destiné à l'affichage de la fenêtre modale en cliquant sur MODIFIER--*/
+
+function scrollBarEdition(){
+  window.addEventListener("scroll", () => {
+    const positionScroll = window.scrollY;
+    if (positionScroll > 24) {
+      barEditionMode.style.position = "sticky";
+      barEditionMode.style.top = "0";
+    }
+  });
+}
+
+
+function openModal() {
+  scrollBarEdition();
+  barEditionMode.style.zIndex = "1";
+  modalBlackPage.style.display = "flex";
+  modalWhiteBlock.style.display = "flex";
+}
+document.querySelector(".js-modal").addEventListener("click", (e) => {
+  e.preventDefault();
+  openModal();
+});
+/*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale--*/
+// function closeModal() {
+//   ducument.querySelectorAll(".closemodal").addEventListener("click", (e) => {
+    
+//   });
+// }

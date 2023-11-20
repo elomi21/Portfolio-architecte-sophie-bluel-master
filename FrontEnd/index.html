@@ -12,23 +12,20 @@
 </head>
 <body>
 
-<aside id="modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal" style="display: none;">
+<aside id="modal" class="modal closemodal" aria-hidden="true" role="dialog" aria-labelledby="titlemodal">
 
 	<div class="modal-wrapper">
-		<img src="./assets/icons/xmark.svg" alt="logo-cross">
+
+		<img src="./assets/icons/xmark.svg" alt="logo-cross" class="closemodal">
 		<h3 id="titlemodal">Galerie photo</h3>
-
-		<div class="modal-gallery"></div>
-
+		<div class="modal-gallery">
+		<!-- ajout de la gallery avec js avec le btn sup sur chaque photo -->
+		</div>
+		<button class="add-photo-gallery">Ajouter une photo</button>
 	</div>
-
-
 </aside>
 
 	
-
-
-
 <div class="edition-mode">
 	<img src="./assets/icons/Vector-w.svg" alt="logo-edit">
 	<p>Mode édition</p>
@@ -42,7 +39,8 @@
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li><a href="./login.html" class="log">login</a></li>
+			<li><a href="./login.html" class="login">login</a></li>
+			<li><a href="./login.html" class="logout">logout</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -62,9 +60,9 @@
 	</section>
 	<section id="portfolio">
 		<h2>Mes Projets</h2>
-		<a href="#modal"class="js-modal">
+		<a href="#modal" class="js-modal">
 		<div class="btn-modification">
-		<img src="./assets/icons/Vector.svg"alt="logo-edit">
+		<img src="./assets/icons/Vector.svg" alt="logo-edit">
 		<p>modifier</p>
 		</div>
 		</a>
@@ -92,7 +90,7 @@
 		</form>
 	</section>
 </main>
-</di>
+</div>
 <footer>
 	<nav>
 		<ul>
