@@ -110,14 +110,10 @@ function isLogin() {
 }
 isLogin();
 
-/*-------------------Modal------------------------------*/
-const modalBlackPage = document.querySelector(".modal")
-const modalWhiteBlock= document.querySelector(".modal-wrapper")
+/*-------------------page Modal------------------------------*/
 
-
-/*--fonction destiné à l'affichage de la fenêtre modale en cliquant sur MODIFIER--*/
-
-function scrollBarEdition(){
+// fonction qui permet d'avoir la bar mode édition qui suit le scoll de la page
+function scrollBarEdition() {
   window.addEventListener("scroll", () => {
     const positionScroll = window.scrollY;
     if (positionScroll > 24) {
@@ -127,6 +123,10 @@ function scrollBarEdition(){
   });
 }
 
+const modalBlackPage = document.querySelector(".modal");
+const modalWhiteBlock = document.querySelector(".modal-wrapper");
+
+/*--fonction destiné à l'affichage de la fenêtre modale en cliquant sur MODIFIER--*/
 
 function openModal() {
   scrollBarEdition();
@@ -138,9 +138,37 @@ document.querySelector(".js-modal").addEventListener("click", (e) => {
   e.preventDefault();
   openModal();
 });
-/*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale--*/
-// function closeModal() {
-//   ducument.querySelectorAll(".closemodal").addEventListener("click", (e) => {
-    
-//   });
-// }
+
+/*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale-wrapper--*/
+function closeModal() {
+  barEditionMode.style.zIndex = "1";
+  modalBlackPage.style.display = " none";
+  modalWhiteBlock.style.display = "none";
+}
+// fermeture de la modale au clic sur la croix
+document.getElementById("closemodal").addEventListener("click", (e) => {
+  e.preventDefault();
+  closeModal();
+});
+// fermeture de la modale au clic sur la partie extérieur
+modalBlackPage.addEventListener("click", (e) => {
+  if (e.target === modalBlackPage) { // ne prend pas en compte modal-wrapper
+    closeModal();
+  }
+});
+
+const displayModalWorks = (works) => {
+  // fonction qui me permet d'afficher dans la div .gallery un tableau work contenant les elements categoryId/imageURL/title contenu respectivement dans les balise html figure/ img src/figcaption
+  let modalGallery = document.querySelector(".modal-gallery");
+  modalGallery.innerHTML = works
+    .map(
+      (work) => `
+         <figure>
+         <img src=${work.imageUrl} alt="${work.title}">
+        <figcaption>${work.title}</figcaption>
+        <img src="
+         </figure>
+        `
+    )
+    .join(""); // permet de concaténer ce que retourne works.map
+};
