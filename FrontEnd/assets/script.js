@@ -18,7 +18,7 @@ const displayWorks = (works) => {
       (work) => `
          <figure class="categorie${work.categoryId}">
          <img src=${work.imageUrl} alt="${work.title}">
-        <figcaption>${work.title}</figcaption>
+         <figcaption>${work.title}</figcaption>
          </figure>
         `
     )
@@ -98,6 +98,8 @@ function isLogin() {
     filters.style.display = "none";
     /*------modif style de la page index en version connecté--------*/
     barEditionMode.style.display = "flex";
+    barEditionMode.style.zIndex = "1";
+    scrollBarEdition();
     header.style.margin = "38px 0px 92px 0px";
     portfolio.style.margin = "139px 0px 92px 0px";
     btnModif.style.display = "flex";
@@ -126,6 +128,22 @@ function scrollBarEdition() {
 const modalBlackPage = document.querySelector(".modal");
 const modalWhiteBlock = document.querySelector(".modal-wrapper");
 
+//fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements categoryId/imageURL/title contenu respectivement dans les balise html figure/ img src/figcaption
+const displayModalWorks = (works) => {
+  let modalGallery = document.querySelector(".modal-gallery");
+  modalGallery.innerHTML = works
+    .map(
+      (work) => `
+        <figure>
+        <img src="./assets/icons/trash-can-solid.svg" alt="logo-trash-can" class="logo-trash">
+        <img src=${work.imageUrl} alt="${work.title}" class="modal-img">
+        </figure>
+        `
+    )
+    .join("");
+  console.log(modalGallery);
+};
+
 /*--fonction destiné à l'affichage de la fenêtre modale en cliquant sur MODIFIER--*/
 
 function openModal() {
@@ -133,6 +151,7 @@ function openModal() {
   barEditionMode.style.zIndex = "1";
   modalBlackPage.style.display = "flex";
   modalWhiteBlock.style.display = "flex";
+  displayModalWorks(works);
 }
 document.querySelector(".js-modal").addEventListener("click", (e) => {
   e.preventDefault();
@@ -141,7 +160,7 @@ document.querySelector(".js-modal").addEventListener("click", (e) => {
 
 /*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale-wrapper--*/
 function closeModal() {
-  barEditionMode.style.zIndex = "1";
+  scrollBarEdition();
   modalBlackPage.style.display = " none";
   modalWhiteBlock.style.display = "none";
 }
@@ -152,23 +171,13 @@ document.getElementById("closemodal").addEventListener("click", (e) => {
 });
 // fermeture de la modale au clic sur la partie extérieur
 modalBlackPage.addEventListener("click", (e) => {
-  if (e.target === modalBlackPage) { // ne prend pas en compte modal-wrapper
+  if (e.target === modalBlackPage) {
+    // ne prend pas en compte modal-wrapper
     closeModal();
   }
 });
-
-const displayModalWorks = (works) => {
-  // fonction qui me permet d'afficher dans la div .gallery un tableau work contenant les elements categoryId/imageURL/title contenu respectivement dans les balise html figure/ img src/figcaption
-  let modalGallery = document.querySelector(".modal-gallery");
-  modalGallery.innerHTML = works
-    .map(
-      (work) => `
-         <figure>
-         <img src=${work.imageUrl} alt="${work.title}">
-        <figcaption>${work.title}</figcaption>
-        <img src="
-         </figure>
-        `
-    )
-    .join(""); // permet de concaténer ce que retourne works.map
-};
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" || e.key === "Esc") {
+    closeModal();
+  }
+});
