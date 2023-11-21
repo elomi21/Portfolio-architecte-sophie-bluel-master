@@ -112,7 +112,7 @@ function isLogin() {
 }
 isLogin();
 
-/*-------------------page Modal------------------------------*/
+/*------------page Modale------------------*/
 
 // fonction qui permet d'avoir la bar mode édition qui suit le scoll de la page
 function scrollBarEdition() {
@@ -124,25 +124,10 @@ function scrollBarEdition() {
     }
   });
 }
-
 const modalBlackPage = document.querySelector(".modal");
 const modalWhiteBlock = document.querySelector(".modal-wrapper");
 
-//fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements categoryId/imageURL/title contenu respectivement dans les balise html figure/ img src/figcaption
-const displayModalWorks = (works) => {
-  let modalGallery = document.querySelector(".modal-gallery");
-  modalGallery.innerHTML = works
-    .map(
-      (work) => `
-        <figure>
-        <img src="./assets/icons/trash-can-solid.svg" alt="logo-trash-can" class="logo-trash">
-        <img src=${work.imageUrl} alt="${work.title}" class="modal-img">
-        </figure>
-        `
-    )
-    .join("");
-  console.log(modalGallery);
-};
+//---------------------Affichage MODALE--------------------
 
 /*--fonction destiné à l'affichage de la fenêtre modale en cliquant sur MODIFIER--*/
 
@@ -157,6 +142,9 @@ document.querySelector(".js-modal").addEventListener("click", (e) => {
   e.preventDefault();
   openModal();
 });
+//----------------------------------------------------
+
+//-------------------fermeture MODALE--------------------
 
 /*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale-wrapper--*/
 function closeModal() {
@@ -176,8 +164,32 @@ modalBlackPage.addEventListener("click", (e) => {
     closeModal();
   }
 });
+// fermeture de la modale au clic sur la touche esc
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" || e.key === "Esc") {
     closeModal();
   }
 });
+//---Affichage de la galerie dans la modale-----
+
+//fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements log-trash-can/imageURL des work/title contenu respectivement dans les balise html figure/ img src du logo/img src de l'image
+const displayModalWorks = (works) => {
+  let modalGallery = document.querySelector(".modal-gallery");
+  modalGallery.innerHTML = works
+    .map(
+      (work) => `
+        <figure class="position-data ${work.id}">
+        <img src="./assets/icons/trash-can-solid.svg" alt="logo-trash-can" class="logo-trash">
+        <img src=${work.imageUrl} alt="${work.title}" class="modal-img">
+        </figure>
+        `
+    )
+    .join("");
+};
+
+//----Supression de photo de la galerie-----
+
+
+
+
+const btnRemovePicture = document.querySelector(".modal-img")
