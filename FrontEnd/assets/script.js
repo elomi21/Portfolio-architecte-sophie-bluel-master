@@ -43,7 +43,7 @@ const displayCategories = (works) => {
       const ancienBtnSelected = document.querySelector(".button-selected");
       ancienBtnSelected.classList.remove("button-selected");
       btnClicked.classList.add("button-selected");
-      //on clic sur btn cat-0 ça active la class .button-selected
+      //on clique sur btn cat-0 ça active la class .button-selected
       //si on clic sur btn cat-1 on active .button-selected mais on retire(remove).button-selected du btn-0
 
       //filtrer les images en fonction du bouton cliqué
@@ -80,7 +80,7 @@ const navLogOut = document.querySelector(".logout");
 const barEditionMode = document.querySelector(".edition-mode");
 const header = document.querySelector("header");
 const btnModif = document.querySelector(".btn-modification");
-
+const portfolio = document.getElementById("portfolio");
 /*-------recharger la page en mode visiteur-----*/
 /*cette fonction a pour but de supprimer le token lorqu'on clique sur logout ce qui recharge la page index en version visiteur*/
 
@@ -91,8 +91,8 @@ navLogOut.addEventListener("click", (e) => {
 });
 
 /*------------page index en mode utilisateur connecté----------*/
+const token = localStorage.getItem("token");
 function isLogin() {
-  const token = localStorage.getItem("token");
   if (token) {
     let filters = document.querySelector(".filters");
     filters.style.display = "none";
@@ -114,7 +114,7 @@ isLogin();
 
 /*------------page Modale------------------*/
 
-// fonction qui permet d'avoir la bar mode édition qui suit le scoll de la page
+// fonction qui permet d'avoir la barre "mode édition" qui suit le scoll de la page
 function scrollBarEdition() {
   window.addEventListener("scroll", () => {
     const positionScroll = window.scrollY;
@@ -125,7 +125,8 @@ function scrollBarEdition() {
   });
 }
 const modalBlackPage = document.querySelector(".modal");
-const modalWhiteBlock = document.querySelector(".modal-wrapper");
+const modalVisualGallery = document.querySelector(".modal-wrapper");
+const modalAddPictureGallery = document.querySelector(".modal-add-picture");
 
 //---------------------Affichage MODALE--------------------
 
@@ -135,41 +136,61 @@ function openModal() {
   scrollBarEdition();
   barEditionMode.style.zIndex = "1";
   modalBlackPage.style.display = "flex";
-  modalWhiteBlock.style.display = "flex";
+  modalVisualGallery.style.display = "flex";
+  modalAddPictureGallery.style.display = "none";
   displayModalWorks(works);
+  btnAddPicture();
+  backToTheModalWrapper();
+  displayCategoriesSelected(works);
 }
 document.querySelector(".js-modal").addEventListener("click", (e) => {
   e.preventDefault();
   openModal();
 });
 //----------------------------------------------------
+function btnAddPicture() {
+  // fonction pour passer de modal-wrapper à modal-add-picture en cliquant sur le bouton "ajouter photo"
+  const btnAddPicture = document.querySelector(".btn-add-photo");
+  btnAddPicture.addEventListener("click", () => {
+    modalVisualGallery.style.display = "none";
+    modalAddPictureGallery.style.display = "flex";
+  });
+}
+//fonction pour gérer le retour vers la modal-wrapper en cliquant sur la flêche gauche
+function backToTheModalWrapper() {
+  const backArrow = document.querySelector(".back-mw");
+  backArrow.addEventListener("click", () => {
+    modalVisualGallery.style.display = "flex";
+    modalAddPictureGallery.style.display = "none";
+  });
+}
 
 //-------------------fermeture MODALE--------------------
 
 /*--fonction destiné à la fermeture de la modale en cliquant soit sur la croix soit à l'extétieur de la feneêtre modale-wrapper--*/
 function closeModal() {
   scrollBarEdition();
-  modalBlackPage.style.display = " none";
-  modalWhiteBlock.style.display = "none";
+  modalBlackPage.style.display = "none";
+  modalVisualGallery.style.display = "none";
+  modalAddPictureGallery.style.display = "none";
 }
 // fermeture de la modale au clic sur la croix
-document.getElementById("closemodal").addEventListener("click", (e) => {
+document.getElementById("closemodal1").addEventListener("click", (e) => {
+  e.preventDefault();
+  closeModal();
+});
+document.getElementById("closemodal2").addEventListener("click", (e) => {
   e.preventDefault();
   closeModal();
 });
 // fermeture de la modale au clic sur la partie extérieur
 modalBlackPage.addEventListener("click", (e) => {
   if (e.target === modalBlackPage) {
-    // ne prend pas en compte modal-wrapper
+    // ne prend pas en compte modal-wrapper et modal-add-picture
     closeModal();
   }
 });
-// fermeture de la modale au clic sur la touche esc
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" || e.key === "Esc") {
-    closeModal();
-  }
-});
+
 //---Affichage de la galerie dans la modale-----
 
 //fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements log-trash-can/imageURL des work/title contenu respectivement dans les balise html figure/ img src du logo/img src de l'image
@@ -178,18 +199,105 @@ const displayModalWorks = (works) => {
   modalGallery.innerHTML = works
     .map(
       (work) => `
-        <figure class="position-data ${work.id}">
+        <figure class="position-data" data-id="${work.id}">
         <img src="./assets/icons/trash-can-solid.svg" alt="logo-trash-can" class="logo-trash">
         <img src=${work.imageUrl} alt="${work.title}" class="modal-img">
         </figure>
         `
     )
     .join("");
+  removePicture();
 };
 
-//----Supression de photo de la galerie-----
+//----Supression de photo de la galerie-modale & gallery-----
+function removePicture() {
+  const btnRemovePicture = document.querySelectorAll(".logo-trash");
+  btnRemovePicture.forEach((btnRemovePicture) => {
+    btnRemovePicture.addEventListener("click", (e) => {
+      const btnTrashClicked = e.target; // Ajout d'un évenement au clic sur les boutons trash, quand on clique on supprime le work par son id
+      let id = btnTrashClicked.parentNode.dataset.id;
+      fetch("http://localhost:5678/api/works/" + id, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      });
+    });
+  });
+}
 
+//------------ajout de photo dans la galerie-modale & gallery ----------
 
+const sendImageForm = document.querySelector(".form-description");
+const inputForm = sendImageForm.querySelectorAll("input, select");
 
+const inputFile = document.getElementById("file");
+const inputLogo = document.querySelector(".icon-picture");
+const inputTitle = document.getElementById("title-picture");
+const selectCategory = document.getElementById("category-select");
+const submitNewPicture = document.querySelector(".btn-validate");
+const errorForm = document.querySelector(".form-error");
 
-const btnRemovePicture = document.querySelector(".modal-img")
+//fonction qui permet de vérifier que tous les input & select sont bien remplis avant de pouvoir valider le fomulaire
+
+function formChecked() {
+  if (
+    inputFile.files.length > 0 &&
+    inputTitle.value.length != 0 &&
+    selectCategory.options.selectedIndex != 0
+  ) {
+    submitNewPicture.style.background = "#1D6154";
+    errorForm.style.display = "none";
+    return true;
+  } else {
+    submitNewPicture.style.background = "#A7A7A7";
+    errorForm.textContent = "Veuillez remplir tous les champs";
+    errorForm.style.display = "block";
+    submitNewPicture.style = "disabled";
+    return false;
+  }
+}
+inputForm.forEach((input) => {
+  input.addEventListener("input", (e) => {
+    formChecked();
+    const inputFile = e.target;
+    const imagePreview = document.getElementById("imagePreview");
+    if (inputFile.files && inputFile.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        imagePreview.classList.add("picture-upload");
+        const btnAddFile = document.querySelector(".label-file");
+        btnAddFile.style.display = "none";
+      };
+      reader.readAsDataURL(inputFile.files[0]);
+    }
+  });
+});
+
+//fonction qui permet de selectionner la catégorie en fonction de son nom
+const displayCategoriesSelected = (works) => {
+  let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
+  let UniqCategories = [...new Set(Allcategories)]; // on dédoublone pour n'avoir qu'une catégorie de chaque
+  for (let i = 0; i < UniqCategories.length; i++)
+    selectCategory.innerHTML += `
+  <option data-categorie="${i + 1}">${UniqCategories[i]}</option>`; // il y a autant d'élément option que d'UnqiCategories
+};
+
+//fonction qui envoie le formulaire en faisant un fetch méthod POST
+sendImageForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const formData = new FormData();
+  formData.append("image", inputFile.files[0]);
+  formData.append("title", inputTitle.value);
+  formData.append("category", selectCategory.options.selectedIndex);
+  fetch("http://localhost:5678/api/works", {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: formData,
+  });
+});
