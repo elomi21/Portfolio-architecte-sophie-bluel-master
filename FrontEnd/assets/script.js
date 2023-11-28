@@ -285,6 +285,15 @@ inputForm.forEach((input) => {
       };
       reader.readAsDataURL(inputFile.files[0]);
     }
+     imagePreview.addEventListener("dblclick", () => {
+       imagePreview.src = "";
+       imagePreview.classList.remove("picture-upload");
+       const btnAddFile = document.querySelector(".label-file");
+       btnAddFile.style.display = "block";
+       const infoFile = document.querySelector(".info-file");
+       infoFile.style.display = "block";
+       inputFile.files = "";
+     });
   });
 });
 
