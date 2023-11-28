@@ -229,6 +229,15 @@ function removePicture() {
 
 //------------ajout de photo dans la galerie-modale & gallery ----------
 
+//fonction qui permet de selectionner la catégorie en fonction de son nom
+const displayCategoriesSelected = (works) => {
+  let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
+  let UniqCategories = [...new Set(Allcategories)]; // on dédoublone pour n'avoir qu'une catégorie de chaque
+  for (let i = 0; i < UniqCategories.length; i++)
+    selectCategory.innerHTML += `
+  <option data-categorie="${i + 1}">${UniqCategories[i]}</option>`; // il y a autant d'élément option que d'UnqiCategories
+};
+
 const sendImageForm = document.querySelector(".form-description");
 const inputForm = sendImageForm.querySelectorAll("input, select");
 
@@ -258,9 +267,10 @@ function formChecked() {
     return false;
   }
 }
+//ici la fonction nous permet d'afficher un aperçu de l'image chargé(avec new FileReader )  tout cachant le logo/le btn/ le texte
 inputForm.forEach((input) => {
   input.addEventListener("input", (e) => {
-    formChecked();
+    formChecked(); //ici l'event input permet de vérifier qu'on a bien renseigné les champs (l'event input se déclenche quand on modifie un champ input/select ref mdn)
     const inputFile = e.target;
     const imagePreview = document.getElementById("imagePreview");
     if (inputFile.files && inputFile.files[0]) {
@@ -270,20 +280,13 @@ inputForm.forEach((input) => {
         imagePreview.classList.add("picture-upload");
         const btnAddFile = document.querySelector(".label-file");
         btnAddFile.style.display = "none";
+        const infoFile = document.querySelector(".info-file");
+        infoFile.style.display = "none";
       };
       reader.readAsDataURL(inputFile.files[0]);
     }
   });
 });
-
-//fonction qui permet de selectionner la catégorie en fonction de son nom
-const displayCategoriesSelected = (works) => {
-  let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
-  let UniqCategories = [...new Set(Allcategories)]; // on dédoublone pour n'avoir qu'une catégorie de chaque
-  for (let i = 0; i < UniqCategories.length; i++)
-    selectCategory.innerHTML += `
-  <option data-categorie="${i + 1}">${UniqCategories[i]}</option>`; // il y a autant d'élément option que d'UnqiCategories
-};
 
 //fonction qui envoie le formulaire en faisant un fetch méthod POST
 sendImageForm.addEventListener("submit", (e) => {
