@@ -141,7 +141,7 @@ function openModal() {
   displayModalWorks(works);
   btnAddPicture();
   backToTheModalWrapper();
-  displayCategoriesSelected(works);
+  displayCategoriesSelected(categories);
 }
 document.querySelector(".js-modal").addEventListener("click", (e) => {
   e.preventDefault();
@@ -226,23 +226,15 @@ function removePicture() {
         .then((response) => {
           console.log(response);
           if (response.status === 204) {
+            // mise à jour de la modal-gallery
+            //suppression de l'image dans index.html
             const figureToRemove = btnTrashClicked.parentNode;
             figureToRemove.remove();
-            //comment sup un ojet spécifique d'un tableau d'objet.je veux modif work
-            idToRemove = works.filter((work) => work.id !== id);
-             if (idToRemove !== -1) {
-               works.splice(idToRemove, 1);
-               displayModalWorks(works)
-             }
-
-             // Mettre à jour la galerie modale
-             displayModalWorks(works);
-            console.log(works)
-            let gallery = document.querySelector(".gallery");
-            const galleryFigureRemove = gallery.querySelector(
-              `[data-id="${id}"]`
-            );
-            galleryFigureRemove.remove();
+            //fonction qui permet de supprimer l'image par son work.id de l'api, si elle est trouvé
+            works = works.filter((work) => work.id != id);
+            displayModalWorks(works);
+            // Mettre à jour de la gallery
+            displayWorks(works);
           }
         })
         .catch((e) => {
@@ -255,18 +247,31 @@ function removePicture() {
 //------------ajout de photo dans la galerie-modale & gallery ----------
 
 //fonction qui permet de selectionner la catégorie en fonction de son nom
-const displayCategoriesSelected = (works) => {
-  let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
-  let UniqCategories = [...new Set(Allcategories)]; // on dédoublone pour n'avoir qu'une catégorie de chaque
-  selectCategory.innerHTML = "<option></option>";
-  for (let i = 0; i < UniqCategories.length; i++)
-    selectCategory.innerHTML += `
-  <option data-categorie="${i + 1}">${UniqCategories[i]}</option>`; // il y a autant d'élément option que d'UnqiCategories
+
+let categories = [];
+const fetchCategories = async () => {
+  const response = await fetch("http://localhost:5678/api/categories");
+  categories = await response.json();
+  console.log("Catégories récupérées :", categories);
+  return categories;
 };
+
+const displayCategoriesSelected = (categories) => {
+  let selectCategorie = document.getElementById("category-select");
+  selectCategorie.innerHTML ='<option></option>';
+  selectCategorie.innerHTML += categories
+    .map((categorie) => {
+      console.log("Mapping", categorie);
+      return `
+      <option data-categorie="${categorie.id + 1}">${categorie.name}</option>`;
+    })
+    .join("");
+    
+};
+fetchCategories(categories);
 
 const sendImageForm = document.querySelector(".form-description");
 const inputForm = sendImageForm.querySelectorAll("input, select");
-
 const inputFile = document.getElementById("file");
 const inputLogo = document.querySelector(".icon-picture");
 const inputTitle = document.getElementById("title-picture");
@@ -293,14 +298,15 @@ function formChecked() {
     return false;
   }
 }
-//ici la fonction nous permet d'afficher un aperçu de l'image chargé(avec new FileReader )  tout cachant le logo/le btn/ le texte
+
+const imagePreview = document.getElementById("imagePreview");
+const btnAddFile = document.querySelector(".label-file");
+const infoFile = document.querySelector(".info-file");
+//ici la fonction nous permet d'afficher un aperçu de l'image chargé(avec new FileReader)  tout en cachant le logo/le btn/ le texte
 inputForm.forEach((input) => {
   input.addEventListener("input", (e) => {
     formChecked(); //ici l'event input permet de vérifier qu'on a bien renseigné les champs (l'event input se déclenche quand on modifie un champ input/select ref mdn)
     const inputFile = e.target;
-    const imagePreview = document.getElementById("imagePreview");
-    const btnAddFile = document.querySelector(".label-file");
-    const infoFile = document.querySelector(".info-file");
     if (inputFile.files && inputFile.files[0]) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -311,7 +317,6 @@ inputForm.forEach((input) => {
       };
       reader.readAsDataURL(inputFile.files[0]);
     }
-    //faire fonction à ajouter closemodal
     imagePreview.addEventListener("dblclick", () => {
       imagePreview.src = "./assets/icons/picture-svgrepo-com 1.svg";
       imagePreview.classList.remove("picture-upload");
@@ -335,5 +340,14 @@ sendImageForm.addEventListener("submit", (e) => {
       Authorization: "Bearer " + token,
     },
     body: formData,
+  }).then((response) => {
+    console.log(response);
+    if (response.status === 201) {
+      response.json().then((work) => {
+        works.push(work);
+        displayModalWorks(works);
+        displayWorks(works);
+      });
+    }
   });
 });
