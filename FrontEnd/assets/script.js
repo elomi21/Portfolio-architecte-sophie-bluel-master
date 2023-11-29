@@ -16,7 +16,7 @@ const displayWorks = (works) => {
   gallery.innerHTML = works
     .map(
       (work) => `
-         <figure class="categorie${work.categoryId}">
+         <figure class="categorie${work.categoryId}" data-id="${work.id}">
          <img src=${work.imageUrl} alt="${work.title}">
          <figcaption>${work.title}</figcaption>
          </figure>
@@ -222,7 +222,32 @@ function removePicture() {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
-      });
+      })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 204) {
+            const figureToRemove = btnTrashClicked.parentNode;
+            figureToRemove.remove();
+            //comment sup un ojet spécifique d'un tableau d'objet.je veux modif work
+            idToRemove = works.filter((work) => work.id !== id);
+             if (idToRemove !== -1) {
+               works.splice(idToRemove, 1);
+               displayModalWorks(works)
+             }
+
+             // Mettre à jour la galerie modale
+             displayModalWorks(works);
+            console.log(works)
+            let gallery = document.querySelector(".gallery");
+            const galleryFigureRemove = gallery.querySelector(
+              `[data-id="${id}"]`
+            );
+            galleryFigureRemove.remove();
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     });
   });
 }
@@ -233,6 +258,7 @@ function removePicture() {
 const displayCategoriesSelected = (works) => {
   let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
   let UniqCategories = [...new Set(Allcategories)]; // on dédoublone pour n'avoir qu'une catégorie de chaque
+  selectCategory.innerHTML = "<option></option>";
   for (let i = 0; i < UniqCategories.length; i++)
     selectCategory.innerHTML += `
   <option data-categorie="${i + 1}">${UniqCategories[i]}</option>`; // il y a autant d'élément option que d'UnqiCategories
@@ -273,27 +299,25 @@ inputForm.forEach((input) => {
     formChecked(); //ici l'event input permet de vérifier qu'on a bien renseigné les champs (l'event input se déclenche quand on modifie un champ input/select ref mdn)
     const inputFile = e.target;
     const imagePreview = document.getElementById("imagePreview");
+    const btnAddFile = document.querySelector(".label-file");
+    const infoFile = document.querySelector(".info-file");
     if (inputFile.files && inputFile.files[0]) {
       const reader = new FileReader();
       reader.onload = (e) => {
         imagePreview.src = e.target.result;
         imagePreview.classList.add("picture-upload");
-        const btnAddFile = document.querySelector(".label-file");
         btnAddFile.style.display = "none";
-        const infoFile = document.querySelector(".info-file");
         infoFile.style.display = "none";
       };
       reader.readAsDataURL(inputFile.files[0]);
     }
-     imagePreview.addEventListener("dblclick", () => {
-       imagePreview.src = "";
-       imagePreview.classList.remove("picture-upload");
-       const btnAddFile = document.querySelector(".label-file");
-       btnAddFile.style.display = "block";
-       const infoFile = document.querySelector(".info-file");
-       infoFile.style.display = "block";
-       inputFile.files = "";
-     });
+    //faire fonction à ajouter closemodal
+    imagePreview.addEventListener("dblclick", () => {
+      imagePreview.src = "./assets/icons/picture-svgrepo-com 1.svg";
+      imagePreview.classList.remove("picture-upload");
+      btnAddFile.style.display = "block";
+      infoFile.style.display = "block";
+    });
   });
 });
 
