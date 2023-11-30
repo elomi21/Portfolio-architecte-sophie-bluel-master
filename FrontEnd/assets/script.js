@@ -162,6 +162,8 @@ function backToTheModalWrapper() {
   backArrow.addEventListener("click", () => {
     modalVisualGallery.style.display = "flex";
     modalAddPictureGallery.style.display = "none";
+    resetImagePreview();
+    resetFormField();
   });
 }
 
@@ -173,6 +175,8 @@ function closeModal() {
   modalBlackPage.style.display = "none";
   modalVisualGallery.style.display = "none";
   modalAddPictureGallery.style.display = "none";
+  resetImagePreview();
+  resetFormField();
 }
 // fermeture de la modale au clic sur la croix
 document.getElementById("closemodal1").addEventListener("click", (e) => {
@@ -224,7 +228,6 @@ function removePicture() {
         },
       })
         .then((response) => {
-          console.log(response);
           if (response.status === 204) {
             // mise à jour de la modal-gallery
             //suppression de l'image dans index.html
@@ -233,18 +236,34 @@ function removePicture() {
             //fonction qui permet de supprimer l'image par son work.id de l'api, si elle est trouvé
             works = works.filter((work) => work.id != id);
             displayModalWorks(works);
-            // Mettre à jour de la gallery
+            // Mise à jour de la gallery
             displayWorks(works);
           }
+          else {
+            errorMessageMw(
+              "Attention!! Erreur lors de la suppression de l'image.Veuillez réessayer"
+            );
+          }
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((error) => {
+          console.error(error)
+          errorMessageMw("une erreur est survenue. Veuillez réessayer")
         });
     });
   });
 }
+// fonction pour afficher un message d'erreur dans le 
+const errorMessageModalW = document.querySelector(".msg-error-mw");
+function errorMessageMw(txtError) {
+  errorMessageModalW.style.display = "block";
+  errorMessageModalW.textContent = txtError;
+}
+// fonction qui cache le message d'erreur
+setInterval(() => {
+  errorMessageModalW.remove();
+}, 10000);
 
-//------------ajout de photo dans la galerie-modale & gallery ----------
+//---ajout de photo dans la galerie-modale & gallery ----------
 
 //fonction qui permet de selectionner la catégorie en fonction de son nom
 
@@ -258,7 +277,7 @@ const fetchCategories = async () => {
 
 const displayCategoriesSelected = (categories) => {
   let selectCategorie = document.getElementById("category-select");
-  selectCategorie.innerHTML ='<option></option>';
+  selectCategorie.innerHTML = "<option></option>";
   selectCategorie.innerHTML += categories
     .map((categorie) => {
       console.log("Mapping", categorie);
@@ -266,7 +285,6 @@ const displayCategoriesSelected = (categories) => {
       <option data-categorie="${categorie.id + 1}">${categorie.name}</option>`;
     })
     .join("");
-    
 };
 fetchCategories(categories);
 
@@ -318,14 +336,26 @@ inputForm.forEach((input) => {
       reader.readAsDataURL(inputFile.files[0]);
     }
     imagePreview.addEventListener("dblclick", () => {
-      imagePreview.src = "./assets/icons/picture-svgrepo-com 1.svg";
-      imagePreview.classList.remove("picture-upload");
-      btnAddFile.style.display = "block";
-      infoFile.style.display = "block";
+      resetImagePreview();
+      resetFormField();
     });
   });
 });
 
+//fonction qui réinitialise le visuel de la blue-frame
+function resetImagePreview() {
+  imagePreview.src = "./assets/icons/picture-svgrepo-com 1.svg";
+  imagePreview.classList.remove("picture-upload");
+  btnAddFile.style.display = "block";
+  infoFile.style.display = "block";
+}
+//fonction qui réinitialise les input du form
+function resetFormField() {
+  inputForm.forEach((input) => {
+    input.value = "";
+  });
+}
+const formValidate = document.querySelector(".form-validate");
 //fonction qui envoie le formulaire en faisant un fetch méthod POST
 sendImageForm.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -341,12 +371,15 @@ sendImageForm.addEventListener("submit", (e) => {
     },
     body: formData,
   }).then((response) => {
-    console.log(response);
     if (response.status === 201) {
       response.json().then((work) => {
         works.push(work);
         displayModalWorks(works);
         displayWorks(works);
+        resetImagePreview();
+        resetFormField();
+        formValidate.style.display = "block";
+        formValidate.textContent = "L'image a bien été ajoutée";
       });
     }
   });
