@@ -238,30 +238,29 @@ function removePicture() {
             displayModalWorks(works);
             // Mise à jour de la gallery
             displayWorks(works);
-          }
-          else {
-            errorMessageMw(
-              "Attention!! Erreur lors de la suppression de l'image.Veuillez réessayer"
+          } else {
+            errorMessageModal(
+              "Erreur lors de la suppression de l'image.Veuillez réessayer"
             );
           }
         })
         .catch((error) => {
-          console.error(error)
-          errorMessageMw("une erreur est survenue. Veuillez réessayer")
+          console.error(error);
+          errorMessageModal("une erreur est survenue. Veuillez réessayer");
         });
     });
   });
 }
-// fonction pour afficher un message d'erreur dans le 
-const errorMessageModalW = document.querySelector(".msg-error-mw");
-function errorMessageMw(txtError) {
+// fonction pour afficher un message d'erreur dans la modal-wrapper
+const errorMessageModalW = document.querySelector(".msg-error-m");
+function errorMessageModal(txtError) {
   errorMessageModalW.style.display = "block";
   errorMessageModalW.textContent = txtError;
+  setInterval(() => {
+    errorMessageModalW.style.display = "none";
+    errorMessageModalW.textContent = "";
+  }, 5000);
 }
-// fonction qui cache le message d'erreur
-setInterval(() => {
-  errorMessageModalW.remove();
-}, 10000);
 
 //---ajout de photo dans la galerie-modale & gallery ----------
 
@@ -271,7 +270,6 @@ let categories = [];
 const fetchCategories = async () => {
   const response = await fetch("http://localhost:5678/api/categories");
   categories = await response.json();
-  console.log("Catégories récupérées :", categories);
   return categories;
 };
 
@@ -280,7 +278,6 @@ const displayCategoriesSelected = (categories) => {
   selectCategorie.innerHTML = "<option></option>";
   selectCategorie.innerHTML += categories
     .map((categorie) => {
-      console.log("Mapping", categorie);
       return `
       <option data-categorie="${categorie.id + 1}">${categorie.name}</option>`;
     })
@@ -338,6 +335,7 @@ inputForm.forEach((input) => {
     imagePreview.addEventListener("dblclick", () => {
       resetImagePreview();
       resetFormField();
+      errorForm.textContent = "";
     });
   });
 });
@@ -370,17 +368,35 @@ sendImageForm.addEventListener("submit", (e) => {
       Authorization: "Bearer " + token,
     },
     body: formData,
-  }).then((response) => {
-    if (response.status === 201) {
-      response.json().then((work) => {
-        works.push(work);
-        displayModalWorks(works);
-        displayWorks(works);
-        resetImagePreview();
-        resetFormField();
+  })
+    .then((response) => {
+      if (response.status === 201) {
+        response.json().then((work) => {
+          works.push(work);
+          displayModalWorks(works);
+          displayWorks(works);
+          resetImagePreview();
+          resetFormField();
+          formValidate.style.display = "block";
+          formValidate.textContent = "L'image a bien été ajoutée";
+          setInterval(() => {
+            formValidate.style.display = "none";
+          }, 3000);
+        });
+      } else {
         formValidate.style.display = "block";
-        formValidate.textContent = "L'image a bien été ajoutée";
-      });
-    }
-  });
+        formValidate.textContent =
+          "Erreur lors de l'ajout de l'image.Veuillez réessayer";
+         setInterval(() => {
+           formValidate.style.display = "none";
+         }, 5000);
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      errorMessageModal("une erreur est survenue. Veuillez réessayer");
+       setInterval(() => {
+         formValidate.style.display = "none";
+       }, 5000);
+    });
 });
