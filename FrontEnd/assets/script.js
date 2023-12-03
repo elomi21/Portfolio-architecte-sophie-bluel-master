@@ -25,39 +25,44 @@ const displayWorks = (works) => {
     .join(""); // permet de concaténer ce que retourne works.map
 };
 
-//définir le nom de chaque filtre en récupérant dans works les category.name new set = garder 1 exemplaire de chaque category
 const displayCategories = (works) => {
-  let Allcategories = works.map((work) => work.category.name); // on map pour récupérer seulement l'élément category.name
-  let UniqCategories = [...new Set(Allcategories)]; // ...new set permet de récupérer une seule work.category.name de chaque, on évite les doublons. on dédoublonne
+  let getCategories = fetchCategories();
   let filters = document.querySelector(".filters"); // on ajoute dans la div .filters x boutons en fonction du nombre de categories trouvées
-  for (let i = 0; i < UniqCategories.length; i++)
-    filters.innerHTML += `<button class="filter-btn" data-categorie="${
-      i + 1
-    }">${UniqCategories[i]}</button>`;
+  let worksCategoriesId = works.map((work) => work.categoryId);
+  let worksUniqCategories = [...new Set(worksCategoriesId)];
 
-  document.querySelectorAll(".filter-btn").forEach((button) => {
-    //pour chaque button contenu dans la class .filter-btn  on va ajouter l'évenement suivant
-    button.addEventListener("click", (e) => {
-      const btnClicked = e.target; // Ajout d'un évenement au clic sur les boutons
-      let category = btnClicked.dataset.categorie;
-      const ancienBtnSelected = document.querySelector(".button-selected");
-      ancienBtnSelected.classList.remove("button-selected");
-      btnClicked.classList.add("button-selected");
-      //on clique sur btn cat-0 ça active la class .button-selected
-      //si on clic sur btn cat-1 on active .button-selected mais on retire(remove).button-selected du btn-0
+  getCategories.then((categories) => {
+    let categoriesFiltred = categories.filter((categorie) =>
+      worksUniqCategories.includes(categorie.id)
+    );
+    categoriesFiltred.map(
+      (categorie) =>
+        (filters.innerHTML += `<button class="filter-btn" data-categorie="${categorie.id}">${categorie.name}</button>`)
+    );
+    document.querySelectorAll(".filter-btn").forEach((button) => {
+      //pour chaque button contenu dans la class .filter-btn  on va ajouter l'évenement suivant
+      button.addEventListener("click", (e) => {
+        const btnClicked = e.target; // Ajout d'un évenement au clic sur les boutons
+        let categorieClicked = btnClicked.dataset.categorie;
+        const ancienBtnSelected = document.querySelector(".button-selected");
+        ancienBtnSelected.classList.remove("button-selected");
+        btnClicked.classList.add("button-selected");
+        //on clique sur btn cat-0 ça active la class .button-selected
+        //si on clic sur btn cat-1 on active .button-selected mais on retire(remove).button-selected du btn-0
 
-      //filtrer les images en fonction du bouton cliqué
-      let filteredWorks = []; // tableau qui va contenir les work.categoryId correspond à la category(le bouton cliqué)
-
-      filteredWorks = works.filter(function (work) {
-        if (category !== "0") {
+        //filtrer les images en fonction du bouton cliqué
+        let filteredWorks = []; // tableau qui va contenir les work.categoryId correspond à la category(le bouton cliqué)
+        filteredWorks = works.filter(function (work) {
           // si le bouton cliqué(ayant une data-categorie > 0)  est != de o alors
-          return work.categoryId == category; // on affiche les work dont la categoryId 1-2 ou 3 correspond au bouton cliqué ayant pour categorie 1-2ou 3
+          return work.categoryId == categorieClicked; // on affiche les work dont la categoryId 1-2 ou 3 correspond au bouton cliqué ayant pour categorie 1-2ou 3
+        });
+
+        if (categorieClicked !== "0") {
+          displayWorks(filteredWorks);
         } else {
-          return work; // autrement affiche toutes les work
+          displayWorks(works);
         }
       });
-      displayWorks(filteredWorks);
     });
   });
 };
@@ -266,12 +271,14 @@ function errorMessageModal(txtError) {
 
 //fonction qui permet de selectionner la catégorie en fonction de son nom
 
-let categories = [];
 const fetchCategories = async () => {
   const response = await fetch("http://localhost:5678/api/categories");
   categories = await response.json();
   return categories;
 };
+
+let categories = [];
+fetchCategories();
 
 const displayCategoriesSelected = (categories) => {
   let selectCategorie = document.getElementById("category-select");
@@ -283,7 +290,6 @@ const displayCategoriesSelected = (categories) => {
     })
     .join("");
 };
-fetchCategories(categories);
 
 const sendImageForm = document.querySelector(".form-description");
 const inputForm = sendImageForm.querySelectorAll("input, select");
@@ -387,16 +393,16 @@ sendImageForm.addEventListener("submit", (e) => {
         formValidate.style.display = "block";
         formValidate.textContent =
           "Erreur lors de l'ajout de l'image.Veuillez réessayer";
-         setInterval(() => {
-           formValidate.style.display = "none";
-         }, 5000);
+        setInterval(() => {
+          formValidate.style.display = "none";
+        }, 5000);
       }
     })
     .catch((error) => {
       console.error(error);
       errorMessageModal("une erreur est survenue. Veuillez réessayer");
-       setInterval(() => {
-         formValidate.style.display = "none";
-       }, 5000);
+      setInterval(() => {
+        formValidate.style.display = "none";
+      }, 5000);
     });
 });
