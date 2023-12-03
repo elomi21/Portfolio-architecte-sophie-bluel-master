@@ -1,4 +1,4 @@
-/*------Cette partie du code est destiné à la page index en mode déconnecté qui est accessible au visiteur-----------*/
+/*------partie du code destiné à la page index en mode déconnecté, accessible en mode visiteur avec utilisation des filtres----*/
 
 /*-Affichage de la galerie en fonction des filtres choisis-*/
 
@@ -25,20 +25,21 @@ const displayWorks = (works) => {
     .join(""); // permet de concaténer ce que retourne works.map
 };
 
+//On affiche seulements les boutons de filtre catégories selon les images présentes dans la galerie
 const displayCategories = (works) => {
   let getCategories = fetchCategories();
-  let filters = document.querySelector(".filters"); // on ajoute dans la div .filters x boutons en fonction du nombre de categories trouvées
-  let worksCategoriesId = works.map((work) => work.categoryId);
-  let worksUniqCategories = [...new Set(worksCategoriesId)];
-
-  getCategories.then((categories) => {
-    let categoriesFiltred = categories.filter((categorie) =>
-      worksUniqCategories.includes(categorie.id)
-    );
-    categoriesFiltred.map(
-      (categorie) =>
-        (filters.innerHTML += `<button class="filter-btn" data-categorie="${categorie.id}">${categorie.name}</button>`)
-    );
+  let filters = document.querySelector(".filters");
+  //on map pour ne récupérer que les work.categoryID
+  let worksCategoriesId = works.map((work) => work.categoryId); 
+  //ensuite on gére la promise de fechCategories
+  getCategories.then((response) => {
+    //On vérifie chaques catégories et test si la catégorie est inclus dans worksCategoriesId (la représentation de la gallery)
+    response.forEach((categorie) => {
+      if (worksCategoriesId.includes(categorie.id)) {
+        // on ajoute dans la div .filters x boutons en fonction du nombre de categories qui existe.
+        filters.innerHTML += `<button class="filter-btn" data-categorie="${categorie.id}">${categorie.name}</button>`
+      }
+    });
     document.querySelectorAll(".filter-btn").forEach((button) => {
       //pour chaque button contenu dans la class .filter-btn  on va ajouter l'évenement suivant
       button.addEventListener("click", (e) => {
@@ -56,7 +57,6 @@ const displayCategories = (works) => {
           // si le bouton cliqué(ayant une data-categorie > 0)  est != de o alors
           return work.categoryId == categorieClicked; // on affiche les work dont la categoryId 1-2 ou 3 correspond au bouton cliqué ayant pour categorie 1-2ou 3
         });
-
         if (categorieClicked !== "0") {
           displayWorks(filteredWorks);
         } else {
@@ -66,17 +66,10 @@ const displayCategories = (works) => {
     });
   });
 };
-
-const showGalleryByfilters = async () => {
+// permet d'afficher la gallery et les boutons
   works = await fetchWorks();
-
   displayWorks(works);
   displayCategories(works);
-};
-showGalleryByfilters();
-// cette fonction me permet de récupérer
-// l'ensemble des fonctions précedentes
-// je les applique en appelant la fonction showGalleryByfilters();
 
 /*-----------------------------------------------------------------*/
 
@@ -86,8 +79,10 @@ const barEditionMode = document.querySelector(".edition-mode");
 const header = document.querySelector("header");
 const btnModif = document.querySelector(".btn-modification");
 const portfolio = document.getElementById("portfolio");
-/*-------recharger la page en mode visiteur-----*/
-/*cette fonction a pour but de supprimer le token lorqu'on clique sur logout ce qui recharge la page index en version visiteur*/
+
+/*-------------------------------recharger la page en mode visiteur---------------------*/
+
+/*cette fonction supprime le token lorqu'on clique sur logout, recharge la page index en version visiteur*/
 
 navLogOut.addEventListener("click", (e) => {
   e.preventDefault();
@@ -96,6 +91,7 @@ navLogOut.addEventListener("click", (e) => {
 });
 
 /*------------page index en mode utilisateur connecté----------*/
+
 const token = localStorage.getItem("token");
 function isLogin() {
   if (token) {
@@ -117,7 +113,7 @@ function isLogin() {
 }
 isLogin();
 
-/*------------page Modale------------------*/
+/*--------------------------------page Modale------------------------------*/
 
 // fonction qui permet d'avoir la barre "mode édition" qui suit le scoll de la page
 function scrollBarEdition() {
