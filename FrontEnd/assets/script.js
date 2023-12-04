@@ -1,4 +1,4 @@
-/*------partie du code destiné à la page index en mode déconnecté, accessible en mode visiteur avec utilisation des filtres----*/
+/*------partie du code destiné à la page index en mode déconnecté, accessible au visiteur-----------*/
 
 /*-Affichage de la galerie en fonction des filtres choisis-*/
 
@@ -66,10 +66,15 @@ const displayCategories = (works) => {
     });
   });
 };
-// permet d'afficher la gallery et les boutons
+
+//permet d'afficher la gallery et les filtres
+const showGalleryByfilters = async () => {
   works = await fetchWorks();
   displayWorks(works);
   displayCategories(works);
+};
+showGalleryByfilters();
+
 
 /*-----------------------------------------------------------------*/
 
@@ -79,11 +84,9 @@ const barEditionMode = document.querySelector(".edition-mode");
 const header = document.querySelector("header");
 const btnModif = document.querySelector(".btn-modification");
 const portfolio = document.getElementById("portfolio");
+/*-------recharger la page en mode visiteur-----*/
 
-/*-------------------------------recharger la page en mode visiteur---------------------*/
-
-/*cette fonction supprime le token lorqu'on clique sur logout, recharge la page index en version visiteur*/
-
+/*fonction qui supprime le token au clic sur logout ce qui recharge la page index en version visiteur*/
 navLogOut.addEventListener("click", (e) => {
   e.preventDefault();
   localStorage.removeItem("token");
@@ -91,6 +94,7 @@ navLogOut.addEventListener("click", (e) => {
 });
 
 /*------------page index en mode utilisateur connecté----------*/
+// quand connecté disparition des filtres + ajout du btn MODIFIER + quelques modif de style
 
 const token = localStorage.getItem("token");
 function isLogin() {
@@ -113,7 +117,7 @@ function isLogin() {
 }
 isLogin();
 
-/*--------------------------------page Modale------------------------------*/
+/*------------page Modale------------------*/
 
 // fonction qui permet d'avoir la barre "mode édition" qui suit le scoll de la page
 function scrollBarEdition() {
