@@ -202,7 +202,7 @@ modalBlackPage.addEventListener("click", (e) => {
 
 //---Affichage de la galerie dans la modale-----
 
-//fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements log-trash-can/imageURL des work/title contenu respectivement dans les balise html figure/ img src du logo/img src de l'image
+//fonction qui me permet d'afficher dans la div .modal-gallery un tableau work contenant les elements log-trash-can/imageURL des work/title contenu respectivement dans les balise html figure/ img src du logo/img src de l'image + appel de la fonction removePicture() pour modifier la gallery + appel de la fonction removePicture pour sup des images de gallery-modal et de la gallery
 const displayModalWorks = (works) => {
   let modalGallery = document.querySelector(".modal-gallery");
   modalGallery.innerHTML = works

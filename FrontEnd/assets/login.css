@@ -10,12 +10,17 @@ header{
 
 header nav li:nth-child(-n+3) {
     font-weight: 400;
-    font-size: 1em;
+    font-size: 16px;
     margin-right: 44px;
 }
 
  header nav li:nth-child(3){
     font-weight: 900;
+}
+
+header nav a{
+    text-decoration: none;
+    color: black;
 }
 
 /* parti login : email / password*/
